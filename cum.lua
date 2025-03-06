@@ -1,3 +1,8 @@
+-- current list of anims
+-- Khaled, Knight, Normal
+-- 105276039560, 798789321448, 136252471123
+
+
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 local Players, RunService = game:GetService("Players"), game:GetService("RunService")
 

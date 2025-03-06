@@ -4,7 +4,7 @@ dont use yet ifp youre seeing this nigha
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 local Window = Rayfield:CreateWindow({
    Name = "anim changers",
-   Icon = 0, -- Icon in Topbar. Can use Lucide Icons (string) or Roblox Image (number). 0 to use no icon (default).
+   Icon = Radiation, -- Icon in Topbar. Can use Lucide Icons (string) or Roblox Image (number). 0 to use no icon (default).
    LoadingTitle = "anim changerz by michael",
    LoadingSubtitle = "holy shit im cumming",
    Theme = "Amethyst", -- Check https://docs.sirius.menu/rayfield/configuration/themes

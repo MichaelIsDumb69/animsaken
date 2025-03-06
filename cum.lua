@@ -32,8 +32,8 @@ local Tab = Window:CreateTab("the actual changers", baby)
 -- Animation Overrides (Replaces Normal's Run Animation)
 local normalRunAnim = "rbxassetid://136252471123500"
 local animationOverrides = {
-    ["rbxassetid://136252471123500"] = "rbxassetid://KNIGHTRUNANIM",
-    ["rbxassetid://136252471123500"] = "rbxassetid://KHALEDRUNANIM"
+    ["rbxassetid://136252471123500"] = "rbxassetid://105276039560",
+    ["rbxassetid://136252471123500"] = "rbxassetid://798789321448"
 }
 
 local selectedOption = "Normal" -- Default (no override)

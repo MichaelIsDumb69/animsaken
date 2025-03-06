@@ -1,50 +1,100 @@
-dont look at my code, weirdo
-im terrible at scripting, fuck you
-dont use yet ifp youre seeing this nigha
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+local Players, RunService = game:GetService("Players"), game:GetService("RunService")
+
+-- Create UI Window
 local Window = Rayfield:CreateWindow({
    Name = "anim changers",
-   Icon = Radiation, -- Icon in Topbar. Can use Lucide Icons (string) or Roblox Image (number). 0 to use no icon (default).
+   Icon = Radiation,
    LoadingTitle = "anim changerz by michael",
-   LoadingSubtitle = "holy shit im cumming",
-   Theme = "Amethyst", -- Check https://docs.sirius.menu/rayfield/configuration/themes
-
+   LoadingSubtitle = "minkemonke",
+   Theme = "Amethyst",
    DisableRayfieldPrompts = true,
-   DisableBuildWarnings = true, -- Prevents Rayfield from warning when the script has a version mismatch with the interface
-
+   DisableBuildWarnings = true,
    ConfigurationSaving = {
-      Enabled = false,
-      FolderName = nil, -- Create a custom folder for your hub/game
-      FileName = "Big Hub"
+      Enabled = true,
+      FolderName = nil,
+      FileName = "michaelconfigs"
    },
-
-   Discord = {
-      Enabled = false, -- Prompt the user to join your Discord server if their executor supports it
-      Invite = "noinvitelink", -- The Discord invite code, do not include discord.gg/. E.g. discord.gg/ ABCD would be ABCD
-      RememberJoins = false -- Set this to false to make them join the discord every time they load it up
-   },
-
-   KeySystem = true, -- Set this to true to use our key system
+   KeySystem = true,
    KeySettings = {
       Title = "michaelkeysystemfr",
       Subtitle = "nyehehehehe",
-      Note = "jk im not gonna make you go thru some bs, key is michaelhateskeys", -- Use this to tell the user how to get a key
-      FileName = "Key", -- It is recommended to use something unique as other scripts using Rayfield may overwrite your key file
-      SaveKey = true, -- The user's key will be saved, but if you change the key, they will be unable to use your script
-      GrabKeyFromSite = false, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
-      Key = {"michaelhateskeys"} -- List of keys that will be accepted by the system, can be RAW file links (pastebin, github etc) or simple strings ("hello","key22")
+      Note = "jk im not gonna make you go thru some bs, key's michaelhateskeys",
+      FileName = "Key",
+      SaveKey = true,
+      GrabKeyFromSite = false,
+      Key = {"michaelhateskeys"}
    }
 })
 
-local Tab = Window:CreateTab("waw changers", baby) -- Title, Image
+local Tab = Window:CreateTab("the actual changers", baby)
+
+-- Animation Overrides (Replaces Normal's Run Animation)
+local normalRunAnim = "rbxassetid://136252471123500"
+local animationOverrides = {
+    ["rbxassetid://136252471123500"] = "rbxassetid://KNIGHTRUNANIM",
+    ["rbxassetid://136252471123500"] = "rbxassetid://KHALEDRUNANIM"
+}
+
+local selectedOption = "Normal" -- Default (no override)
+local blockedAnimations = {} -- Will only be updated when a replacement is chosen
+
+-- Dropdown UI
 local Dropdown = Tab:CreateDropdown({
-   Name = "General Animations",
-   Options = {"Normal","Knight","Khaled",},
-   CurrentOption = {"Normal"},
+   Name = "Run Animations",
+   Options = {"Normal", "Knight", "Khaled"},
+   CurrentOption = "Normal",
    MultipleOptions = false,
-   Flag = "Dropdown1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
-   Callback = function(Options)
-   -- The function that takes place when the selected option is changed
-   -- The variable (Options) is a table of strings for the current selected options
+   Flag = "Dropdown1",
+   Callback = function(Option)
+      selectedOption = Option[1] -- Update selected animation type
+      print("Selected animation type:", selectedOption)
+
+      -- Update blockedAnimations: Only block normal when an override is active
+      blockedAnimations = selectedOption ~= "Normal" and {[normalRunAnim] = true} or {}
    end,
 })
+
+-- Function to replace animations
+local function replaceAnimation(animationTrack)
+    if selectedOption ~= "Normal" and animationTrack.Animation.AnimationId == normalRunAnim then
+        local newAnimId = animationOverrides[selectedOption]
+        if newAnimId then
+            local anim = Instance.new("Animation")
+            anim.AnimationId = newAnimId
+            local loadedAnim = humanoid:LoadAnimation(anim)
+            loadedAnim.Priority = Enum.AnimationPriority.Action2
+            loadedAnim:Play()
+        end
+    end
+end
+
+-- Function to stop blocked animations
+local function stopBlockedAnimations(humanoid)
+    for _, track in pairs(humanoid:GetPlayingAnimationTracks()) do
+        if blockedAnimations[track.Animation and track.Animation.AnimationId] then track:Stop() end
+    end
+end
+
+local function onCharacterAdded(character)
+    local humanoid = character:FindFirstChildOfClass("Humanoid")
+    if humanoid then
+        local connection; connection = RunService.Heartbeat:Connect(function()
+            if character.Parent then stopBlockedAnimations(humanoid) else connection:Disconnect() end
+        end)
+    end
+end
+
+local function onPlayerAdded(player)
+    player.CharacterAdded:Connect(onCharacterAdded)
+    if player.Character then onCharacterAdded(player.Character) end
+end
+
+Players.PlayerAdded:Connect(onPlayerAdded)
+for _, player in ipairs(Players:GetPlayers()) do onPlayerAdded(player) end
+
+pcall(function()
+    if getgenv().animationHook then getgenv().animationHook:Disconnect() end
+end)
+
+getgenv().animationHook = humanoid.AnimationPlayed:Connect(replaceAnimation)
